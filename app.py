@@ -208,9 +208,8 @@ for i in range(0,4):
 
 st.subheader("도큐먼트")
 
-if st.button("코드 보기"):
-    code = '''
-    import numpy as np
+code = '''
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
@@ -417,6 +416,5 @@ for i in range(0,4):
     p = future_price[i][0]
     st.write(f"{d}일 뒤 예상 주가 : {p}") 
     '''
-    st.code(code, language='python')
-
-
+st.code(code, language='python')
+  
