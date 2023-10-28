@@ -1,7 +1,7 @@
 streamlit
 numpy
 pandas
-sklearn
+sklearn.preprocessing
 matplotlib
 tensorflow
 yfinance
