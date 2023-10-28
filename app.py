@@ -195,7 +195,7 @@ plt.xlabel('Days after')
 plt.ylabel('Stock Price')
 plt.title('Stock Price(futere)')
 for i, price in enumerate(last_days[-5:]):
-    plt.text(after_days[i], price, f'{round(float(price), 2)}', ha='right', va='bottom')
+    plt.text(after_days[i], price, f'{round(float(price), 2)}', ha='left', va='bottom')
 plt.legend()
 st.pyplot(plt)
 
