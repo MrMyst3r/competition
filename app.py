@@ -145,7 +145,7 @@ with left_column:
     
 
 with right_column:
-    st.write("## 최근 31일 그래프" )
+    st.write("## 최근 그래프" )
     # 확대 그래프
     back = 31
     plt.figure(figsize=(12, 6))
