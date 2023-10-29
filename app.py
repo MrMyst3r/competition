@@ -501,7 +501,6 @@ for i in range(0,4):
 
 
 st.subheader("도큐먼트")
- 
     '''
 st.code(code, language='python')
   
