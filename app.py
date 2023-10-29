@@ -61,6 +61,69 @@ selected_number_split = st.sidebar.selectbox("학습용 데이터 비율(0.8추�
 # 경사하강
 # 50~100
 epochs_list = list(range(50,101))
+# 기본값import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+import yfinance as yf
+import streamlit as st
+
+st.markdown(
+    f"""
+    <style>
+        .centered-text {{
+            text-align: center;
+        }}
+    </style>
+    """
+    , unsafe_allow_html=True
+)
+
+st.markdown("<h1 class='centered-text'>창원 중앙고 프로그래밍 대회</h1>", unsafe_allow_html=True)
+st.markdown("<h2 class='centered-text'>LSTM model (predicting stock price)</h2>", unsafe_allow_html=True)
+# st.markdown("<h3 class='centered-text'>주가 예측</h3>", unsafe_allow_html=True)
+
+# 화면 나누기
+left_column, right_column = st.columns(2)
+
+## 선택 박스
+# 회사
+input_company = st.sidebar.text_input("주식 회사(심볼) ex)AAPL")
+
+# 주가 종류
+type_list = ['Open', 'High', 'Low', 'Close', 'Adj Close']
+# 기본값
+default_index_type = type_list.index('Adj Close') if 'Adj Close' in type_list else 0
+selected_type = st.sidebar.selectbox("주가", type_list, index=default_index_type)
+
+# 가져올 데이터   
+# 1~15
+year_list = list(range(1, 16))
+# 기본값
+default_index_year = year_list.index(10) if 10 in year_list else 0
+selected_number_year = st.sidebar.selectbox("가져올 주가 기간(년)", year_list, index=default_index_year)
+
+## 모델 학습 관련
+    
+# 입력값 형태
+# 14~30
+lookback_list = list(range(14, 31))
+# 기본값
+default_index_lookback = lookback_list.index(21) if 21 in lookback_list else 0
+selected_number_lookback = st.sidebar.selectbox("모델 학습 입력값의 시퀀스 길이(일)", lookback_list, index=default_index_lookback)
+    
+# 데이터 분할
+# 0.7~0,9
+split_list = [0.7, 0.75, 0.8, 0.85, 0.9]
+# 기본값
+default_index_split = split_list.index(0.8) if 0.8 in split_list else 0
+selected_number_split = st.sidebar.selectbox("학습용 데이터 비율(0.8추천)", split_list, index=default_index_split)
+    
+# 경사하강
+# 50~100
+epochs_list = list(range(50,101))
 # 기본값
 default_index_epochs = epochs_list.index(50) if 50 in epochs_list else 0
 selected_number_epochs = st.sidebar.selectbox("경사하강 회수(epochs)", epochs_list, index=default_index_epochs) 
@@ -92,7 +155,7 @@ for i in range(len(price_scaled) - look_back):
 X, y = np.array(X), np.array(y)
 
 # 데이터셋 분할
-split_ratio = 0.8
+split_ratio = selected_number_split
 split = int(len(X) * split_ratio)
 X_train, X_test, y_train, y_test = X[:split], X[split:], y[:split], y[split:]
 
@@ -160,8 +223,18 @@ with right_column:
     st.subheader(f"\nR2결정계수 : {r2}")
     st.write("R2(결정계수)는 모델이 데이터에 얼마나 적합한지 평가하는 통계적 척도이다. R2는 주로 0~1사이의 값을 가지며, 1에 가까울수록 모델이 데이터를 잘 설명함을 의미하고 0에 가까울수록 설명하지 못함을 의미한다. 주로 R2가 0.7이상이면 좋은 모델이라 평가한다.")
 
+acc = 0
+for i in range(0, len(y_test)-1):
+    if (predicted[i+1][0]-predicted[i][0])*(y_test[i+1]-y_test[i]) > 0:
+        acc += 1
+acc_perc = acc/(len(y_test)-1)*100
+
 st.write("## ⓘ")
 st.write("**3일 이상 뒤의 예측부터는 예측력이 매우 떨어진다. 1,2일 뒤 예측 주가만 참고하는게 바람직하다.**")
+st.write(f'**이 모델은 <span style="color: red;">{acc_perc}%</span>의 확률로 주가의 상승, 하락을 올바르게 예측한다.**', unsafe_allow_html=True)
+
+
+
 
 st.write("## 미래 주가 예측 그래프") 
 after = 0
@@ -303,7 +376,7 @@ for i in range(len(price_scaled) - look_back):
 X, y = np.array(X), np.array(y)
 
 # 데이터셋 분할
-split_ratio = 0.8
+split_ratio = selected_number_split
 split = int(len(X) * split_ratio)
 X_train, X_test, y_train, y_test = X[:split], X[split:], y[:split], y[split:]
 
@@ -371,8 +444,18 @@ with right_column:
     st.subheader(f"\nR2결정계수 : {r2}")
     st.write("R2(결정계수)는 모델이 데이터에 얼마나 적합한지 평가하는 통계적 척도이다. R2는 주로 0~1사이의 값을 가지며, 1에 가까울수록 모델이 데이터를 잘 설명함을 의미하고 0에 가까울수록 설명하지 못함을 의미한다. 주로 R2가 0.7이상이면 좋은 모델이라 평가한다.")
 
+acc = 0
+for i in range(0, len(y_test)-1):
+    if (predicted[i+1][0]-predicted[i][0])*(y_test[i+1]-y_test[i]) > 0:
+        acc += 1
+acc_perc = acc/(len(y_test)-1)*100
+
 st.write("## ⓘ")
 st.write("**3일 이상 뒤의 예측부터는 예측력이 매우 떨어진다. 1,2일 뒤 예측 주가만 참고하는게 바람직하다.**")
+st.write(f'**이 모델은 <span style="color: red;">{acc_perc}%</span>의 확률로 주가의 상승, 하락을 올바르게 예측한다.**', unsafe_allow_html=True)
+
+
+
 
 st.write("## 미래 주가 예측 그래프") 
 after = 0
@@ -406,7 +489,7 @@ plt.xlabel('Days after')
 plt.ylabel('Stock Price')
 plt.title('Stock Price(futere)')
 for i, price in enumerate(last_days[-5:]):
-    plt.text(after_days[i], price, f'{round(float(price), 2)}', ha='right', va='bottom')
+    plt.text(after_days[i], price, f'{round(float(price), 2)}', ha='left', va='bottom')
 plt.legend()
 st.pyplot(plt)
 
@@ -414,7 +497,11 @@ st.write(f"오늘 주가 : {data[selected_type].values[-1]}")
 for i in range(0,4):
     d = after_days[i+1]
     p = future_price[i][0]
-    st.write(f"{d}일 뒤 예상 주가 : {p}") 
+    st.write(f"{d}일 뒤 예상 주가 : {p}")
+
+
+st.subheader("도큐먼트")
+ 
     '''
 st.code(code, language='python')
   
