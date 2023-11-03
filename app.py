@@ -153,7 +153,7 @@ with right_column:
     plt.plot(data.index[-back:], predicted[-back:], label='Predicted stock price', linestyle = '--')
     plt.xlabel('Date')
     plt.ylabel('Stock Price')
-    plt.title('Stock Price(recent 31days)')
+    plt.title('Stock Price(recent data)')
     plt.legend()
         
     st.pyplot(plt)
@@ -161,14 +161,20 @@ with right_column:
     st.write("R2(결정계수)는 모델이 데이터에 얼마나 적합한지 평가하는 통계적 척도이다. R2는 주로 0~1사이의 값을 가지며, 1에 가까울수록 모델이 데이터를 잘 설명함을 의미하고 0에 가까울수록 설명하지 못함을 의미한다. 주로 R2가 0.7이상이면 좋은 모델이라 평가한다.")
 
 acc = 0
+adj_acc = 0
 for i in range(0, len(y_test)-1):
     if (predicted[i+1][0]-predicted[i][0])*(y_test[i+1]-y_test[i]) > 0:
         acc += 1
+for i in range(0, len(y_test)-2):
+    if (predicted[i+1][0]-predicted[i][0])*(y_test[i+2]-y_test[i+1]) > 0:
+        adj_acc += 1
 acc_perc = acc/(len(y_test)-1)*100
+adj_acc_perc = adj_acc/(len(y_test)-2)*100
 
 st.write("## ⓘ")
 st.write("**3일 이상 뒤의 예측부터는 예측력이 매우 떨어진다. 1,2일 뒤 예측 주가만 참고하는게 바람직하다.**")
 st.write(f'**이 모델은 <span style="color: red;">{acc_perc}%</span>의 확률로 주가의 상승, 하락을 올바르게 예측한다.**', unsafe_allow_html=True)
+st.write(f'**이 모델은 <span style="color: red;">{adj_acc_perc}%</span>의 확률로 주가의 상승, 하락을 올바르게 예측한다.(조정된 예측)**', unsafe_allow_html=True)
 
 
 
@@ -374,7 +380,7 @@ with right_column:
     plt.plot(data.index[-back:], predicted[-back:], label='Predicted stock price', linestyle = '--')
     plt.xlabel('Date')
     plt.ylabel('Stock Price')
-    plt.title('Stock Price(recent 31days)')
+    plt.title('Stock Price(recent data)')
     plt.legend()
         
     st.pyplot(plt)
@@ -382,14 +388,20 @@ with right_column:
     st.write("R2(결정계수)는 모델이 데이터에 얼마나 적합한지 평가하는 통계적 척도이다. R2는 주로 0~1사이의 값을 가지며, 1에 가까울수록 모델이 데이터를 잘 설명함을 의미하고 0에 가까울수록 설명하지 못함을 의미한다. 주로 R2가 0.7이상이면 좋은 모델이라 평가한다.")
 
 acc = 0
+adj_acc = 0
 for i in range(0, len(y_test)-1):
     if (predicted[i+1][0]-predicted[i][0])*(y_test[i+1]-y_test[i]) > 0:
         acc += 1
+for i in range(0, len(y_test)-2):
+    if (predicted[i+1][0]-predicted[i][0])*(y_test[i+2]-y_test[i+1]) > 0:
+        adj_acc += 1
 acc_perc = acc/(len(y_test)-1)*100
+adj_acc_perc = adj_acc/(len(y_test)-2)*100
 
 st.write("## ⓘ")
 st.write("**3일 이상 뒤의 예측부터는 예측력이 매우 떨어진다. 1,2일 뒤 예측 주가만 참고하는게 바람직하다.**")
 st.write(f'**이 모델은 <span style="color: red;">{acc_perc}%</span>의 확률로 주가의 상승, 하락을 올바르게 예측한다.**', unsafe_allow_html=True)
+st.write(f'**이 모델은 <span style="color: red;">{adj_acc_perc}%</span>의 확률로 주가의 상승, 하락을 올바르게 예측한다.(조정된 예측)**', unsafe_allow_html=True)
 
 
 
@@ -438,6 +450,7 @@ for i in range(0,4):
 
 
 st.subheader("도큐먼트")
+ 
     '''
 st.code(code, language='python')
   
